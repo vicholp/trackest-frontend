@@ -2,7 +2,7 @@ services:
   vite:
     build:
       context: ./
-      dockerfile: ./deploy/local/dev.Dockerfile
+      dockerfile: ./deploy/local/vue.Dockerfile
     volumes:
       - .:/app
     ports:

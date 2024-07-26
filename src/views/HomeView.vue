@@ -1,71 +1,150 @@
 <template>
   <div class="container mx-auto flex flex-col gap-5 pt-5">
-    <div class="flex gap-3 py-5 bg-black rounded p-6">
-      <div class="w-32">
-        <select
-          v-model="newWork.projectId"
-        >
-          <option
-            v-for="project in projects"
-            :key="project.id"
-            :value="project.id"
-          >
-            {{ project.name }}
-          </option>
-        </select>
-      </div>
-      <div class="w-52">
-        <select
-          v-model="newWork.taskId"
-        >
-          <option
-            v-for="task in tasks"
-            :key="task.id"
-            :value="task.id"
-          >
-            {{ task.name }}
-          </option>
-        </select>
-      </div>
-      <div class="w-64">
-        <input
-          v-model="newWork.startedAt"
-          type="datetime-local"
-        >
-      </div>
-      <div class="w-64">
-        <input
-          v-model="newWork.endedAt"
-          type="datetime-local"
-        >
-      </div>
-      <div>
-        <input
-          v-model="newWork.description"
-          type="text"
-          placeholder="Description"
-        >
-      </div>
-      <div class="flex items-center justify-end ">
-        <button
-          @click="addWork"
-        >
-          Add
-        </button>
-      </div>
-    </div>
-    <div class="flex flex-col gap-3 bg-black rounded p-6">
-      <div class="flex gap-4 font-bold py-3">
-        <div class="w-32">
+    <div class="flex flex-col gap-3 py-5 bg-black dark:bg-gray-950 dark:text-white rounded p-6">
+      <div class="flex gap-4 font-bold">
+        <div class="w-52">
           Project
         </div>
         <div class="w-52">
           Task
         </div>
-        <div class="w-64">
+        <div class="w-60">
           Started at
         </div>
-        <div class="w-64">
+        <div class="w-60">
+          Ended at
+        </div>
+        <div class="">
+          Description
+        </div>
+      </div>
+      <div class="flex gap-4 font-bold">
+        <div class="w-52">
+          <select
+            v-model="newWork.projectId"
+            class="w-full dark:bg-slate-900 dark:border-0 rounded"
+          >
+            <option
+              v-for="project in projects"
+              :key="project.id"
+              :value="project.id"
+            >
+              {{ project.name }}
+            </option>
+          </select>
+        </div>
+        <div class="w-52">
+          <select
+            v-model="newWork.taskId"
+            class="w-full dark:bg-slate-900 dark:border-0 rounded"
+          >
+            <option
+              v-for="task in newWork.tasks"
+              :key="task.id"
+              :value="task.id"
+            >
+              {{ task.name }}
+            </option>
+          </select>
+        </div>
+        <div class="w-60">
+          <input
+            v-model="newWork.startedAt"
+            class="dark:bg-slate-900 dark:border-0 rounded w-full"
+            type="datetime-local"
+          >
+        </div>
+        <div class="w-60">
+          <input
+            v-model="newWork.endedAt"
+            class="dark:bg-slate-900 dark:border-0 rounded w-full"
+            type="datetime-local"
+          >
+        </div>
+        <div class="">
+          <input
+            v-model="newWork.description"
+            class="dark:bg-slate-900 dark:border-0 rounded"
+            type="text"
+            placeholder="Description"
+          >
+        </div>
+        <div class="flex items-center justify-end ">
+          <button
+            @click="addWork"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3 bg-black dark:bg-gray-950 dark:text-white rounded p-6">
+      <div class="flex gap-4 font-bold py-3">
+        <div class="w-52">
+          Project
+        </div>
+        <div class="w-52">
+          Task
+        </div>
+      </div>
+      <div
+        class="flex gap-4 py-1"
+      >
+        <div class="w-52">
+          <select
+            v-model="newTask.projectId"
+            class="min-w-full dark:bg-slate-900 dark:border-0 rounded"
+          >
+            <option
+              v-for="project in projects"
+              :key="project.id"
+              :value="project.id"
+            >
+              {{ project.name }}
+            </option>
+          </select>
+        </div>
+        <div class="w-52">
+          <input
+            v-model="newTask.name"
+            type="text"
+            placeholder="Task name"
+            class="w-full dark:bg-slate-900 dark:border-0 rounded"
+          >
+        </div>
+        <div class="flex items-center justify-end ">
+          <button
+            @click="createTask"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      <div
+        v-for="task in tasks"
+        :key="task.id"
+        class="flex gap-4 py-1"
+      >
+        <div class="w-52">
+          {{ task.project.name }}
+        </div>
+        <div class="w-52">
+          {{ task.name }}
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col gap-3 bg-black dark:bg-gray-950 dark:text-white rounded p-6">
+      <div class="flex gap-4 font-bold py-3">
+        <div class="w-52">
+          Project
+        </div>
+        <div class="w-52">
+          Task
+        </div>
+        <div class="w-60">
+          Started at
+        </div>
+        <div class="w-60">
           Ended at
         </div>
         <div>
@@ -77,16 +156,16 @@
         :key="work.id"
         class="flex gap-4 py-1"
       >
-        <div class="w-32">
+        <div class="w-52">
           {{ work.project.name }}
         </div>
         <div class="w-52">
           {{ work.task.name }}
         </div>
-        <div class="w-64">
+        <div class="w-60">
           {{ $dayjs(work.startedAt).fromNow() }}
         </div>
-        <div class="w-64">
+        <div class="w-60">
           {{ $dayjs(work.endedAt).fromNow() }}
         </div>
         <div>
@@ -107,7 +186,7 @@ export default {
   data() {
     return {
       newWork: {
-        projectId: 1,
+        projectId: null,
         taskId: null,
 
         description: '',
@@ -115,26 +194,69 @@ export default {
         endedAt: null,
 
       },
+      newTask: {
+        name: null,
+        projectId: 1,
+      },
       projects: [ ],
       tasks: [ ],
       works: [],
     };
   },
+  computed: {
+    defaultSelectedProject() {
+      return 1;
+    },
+  },
+  watch: {
+    'newWork.projectId': function() {
+      this.fetchProjectTasks();
+    },
+    'newWork.startedAt': function() {
+      if (this.newWork.endedAt) {
+        return;
+      }
+      this.newWork.endedAt = this.$dayjs(this.newWork.startedAt).add(1, 'hour').format('YYYY-MM-DDTHH:mm');
+    },
+  },
   mounted() {
+    this.newWork.projectId = this.defaultSelectedProject;
+    this.newTask.projectId = this.defaultSelectedProject;
+
     this.fetchProjects();
-    this.fetchTasks();
+    this.fetchAllTasks();
+    this.fetchProjectTasks();
     this.fetchWorks();
   },
   methods: {
     async addWork() {
       await tasksApi.works.create(this.newWork.taskId, this.newWork);
       this.fetchWorks();
+
+      this.newWork = {
+        projectId: this.defaultSelectedProject,
+        taskId: null,
+        description: null,
+        startedAt: this.newWork.endedAt,
+        endedAt: null,
+      };
     },
     async fetchProjects() {
       this.projects = (await projectsApi.getAll()).data.data;
     },
-    async fetchTasks() {
-      this.tasks = (await projectsApi.tasks.getAll(this.newWork.projectId)).data.data;
+    async fetchProjectTasks() {
+      this.newWork.tasks = (await projectsApi.tasks.getAll(this.newWork.projectId)).data.data;
+    },
+    async fetchAllTasks() {
+      this.tasks = (await tasksApi.getAll({'with_project': true})).data.data;
+    },
+    async createTask() {
+      await projectsApi.tasks.create(this.newTask.projectId, this.newTask);
+      this.fetchAllTasks();
+
+      if (this.newWork.projectId === this.newTask.projectId) {
+        this.fetchProjectTasks();
+      }
     },
     async fetchWorks() {
       this.works = (await worksApi.mine()).data.data;

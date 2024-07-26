@@ -9,5 +9,8 @@ export default {
     getAll(projectId) {
       return api.get(`/api/projects/${projectId}/tasks`);
     },
+    create(projectId, task) {
+      return api.post(`/api/projects/${projectId}/tasks`, task);
+    },
   },
 };

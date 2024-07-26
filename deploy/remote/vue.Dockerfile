@@ -12,7 +12,7 @@ RUN npm i
 
 COPY . .
 
-RUN npm run prod
+RUN npm run build
 
 FROM nginx:1.25
 

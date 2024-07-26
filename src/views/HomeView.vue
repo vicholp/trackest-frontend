@@ -14,7 +14,7 @@
         <div class="w-60">
           Ended at
         </div>
-        <div class="">
+        <div class="flex-grow">
           Description
         </div>
       </div>
@@ -61,19 +61,20 @@
             type="datetime-local"
           >
         </div>
-        <div class="">
-          <input
+        <div class="flex-grow">
+          <textarea
             v-model="newWork.description"
-            class="dark:bg-slate-900 dark:border-0 rounded"
+            class="dark:bg-slate-900 dark:border-0 rounded min-h-10 h-20 w-full"
             type="text"
             placeholder="Description"
-          >
+            @keypress.ctrl.enter="addWork"
+          />
         </div>
-        <div class="flex items-center justify-end ">
+        <div class="flex items-center justify-center w-10">
           <button
             @click="addWork"
           >
-            Add
+            add
           </button>
         </div>
       </div>
@@ -156,19 +157,19 @@
         :key="work.id"
         class="flex gap-4 py-1"
       >
-        <div class="w-52">
+        <div class="min-w-52">
           {{ work.project.name }}
         </div>
-        <div class="w-52">
+        <div class="min-w-52">
           {{ work.task.name }}
         </div>
-        <div class="w-60">
-          {{ $dayjs(work.startedAt).fromNow() }}
+        <div class="min-w-60">
+          {{ $dayjs(work.startedAt).format('YYYY-MM-DD HH:mm') }}
         </div>
-        <div class="w-60">
-          {{ $dayjs(work.endedAt).fromNow() }}
+        <div class="min-w-60">
+          {{ $dayjs(work.endedAt).format('YYYY-MM-DD HH:mm') }}
         </div>
-        <div>
+        <div class="text-wrap h-full w-max">
           {{ work.description }}
         </div>
       </div>
@@ -235,10 +236,11 @@ export default {
 
       this.newWork = {
         projectId: this.defaultSelectedProject,
-        taskId: null,
+        taskId: this.newWork.taskId,
         description: null,
         startedAt: this.newWork.endedAt,
         endedAt: null,
+        tasks: this.newWork.tasks,
       };
     },
     async fetchProjects() {

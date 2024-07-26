@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto flex flex-col gap-5 pt-5">
-    <div class="flex flex-col gap-3 py-5 bg-black dark:bg-gray-950 dark:text-white rounded p-6">
+    <div class="flex flex-col gap-3 py-5 bg-white dark:bg-gray-950 dark:text-white rounded p-6">
       <div class="flex gap-4 font-bold">
         <div class="w-52">
           Project
@@ -22,7 +22,7 @@
         <div class="w-52">
           <select
             v-model="newWork.projectId"
-            class="w-full dark:bg-slate-900 dark:border-0 rounded"
+            class="w-full bg-white dark:bg-slate-900 dark:border-0 rounded"
           >
             <option
               v-for="project in projects"
@@ -36,7 +36,7 @@
         <div class="w-52">
           <select
             v-model="newWork.taskId"
-            class="w-full dark:bg-slate-900 dark:border-0 rounded"
+            class="w-full bg-white dark:bg-slate-900 dark:border-0 rounded"
           >
             <option
               v-for="task in newWork.tasks"
@@ -50,21 +50,21 @@
         <div class="w-60">
           <input
             v-model="newWork.startedAt"
-            class="dark:bg-slate-900 dark:border-0 rounded w-full"
+            class="bg-white dark:bg-slate-900 dark:border-0 rounded w-full"
             type="datetime-local"
           >
         </div>
         <div class="w-60">
           <input
             v-model="newWork.endedAt"
-            class="dark:bg-slate-900 dark:border-0 rounded w-full"
+            class="bg-white dark:bg-slate-900 dark:border-0 rounded w-full"
             type="datetime-local"
           >
         </div>
         <div class="flex-grow">
           <textarea
             v-model="newWork.description"
-            class="dark:bg-slate-900 dark:border-0 rounded min-h-10 h-20 w-full"
+            class="bg-white dark:bg-slate-900 dark:border-0 rounded min-h-10 h-20 w-full"
             type="text"
             placeholder="Description"
             @keypress.ctrl.enter="addWork"
@@ -79,7 +79,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col gap-3 bg-black dark:bg-gray-950 dark:text-white rounded p-6">
+    <div class="flex flex-col gap-3 bg-white dark:bg-gray-950 dark:text-white rounded p-6">
       <div class="flex gap-4 font-bold py-3">
         <div class="w-52">
           Project
@@ -94,7 +94,7 @@
         <div class="w-52">
           <select
             v-model="newTask.projectId"
-            class="min-w-full dark:bg-slate-900 dark:border-0 rounded"
+            class="min-w-full bg-white dark:bg-slate-900 dark:border-0 rounded"
           >
             <option
               v-for="project in projects"
@@ -110,7 +110,7 @@
             v-model="newTask.name"
             type="text"
             placeholder="Task name"
-            class="w-full dark:bg-slate-900 dark:border-0 rounded"
+            class="w-full bg-white dark:bg-slate-900 dark:border-0 rounded"
           >
         </div>
         <div class="flex items-center justify-end ">
@@ -134,7 +134,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col gap-3 bg-black dark:bg-gray-950 dark:text-white rounded p-6">
+    <div class="flex flex-col gap-3 bg-white dark:bg-gray-950 dark:text-white rounded p-6">
       <div class="flex gap-4 font-bold py-3">
         <div class="w-52">
           Project

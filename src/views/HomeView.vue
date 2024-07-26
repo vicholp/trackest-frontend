@@ -179,7 +179,7 @@
           </div>
           <div class="min-w-60 flex items-center gap-1">
             <div
-              v-if="$dayjs(work.endedAt).format('HH') === '00'"
+              v-if="$dayjs(work.startedAt).format('YYYY-MM-DD') !== $dayjs(work.endedAt).format('YYYY-MM-DD')"
               class="dark:text-green-800 text-sm font-bold"
             >
               +1

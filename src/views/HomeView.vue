@@ -153,24 +153,44 @@
         </div>
       </div>
       <div
-        v-for="work in works"
-        :key="work.id"
-        class="flex gap-4 py-1"
+        v-for="day in worksByDay"
+        :key="day.id"
+        class="flex flex-col gap-4 py-1"
       >
-        <div class="min-w-52">
-          {{ work.project.name }}
+        <div class="font-bold pt-4 pb-1 flex gap-3 items-center">
+          <div class="">
+            {{ day.date }}
+          </div>
+          <div class="dark:bg-white flex-grow h-[1px]" />
         </div>
-        <div class="min-w-52">
-          {{ work.task.name }}
-        </div>
-        <div class="min-w-60">
-          {{ $dayjs(work.startedAt).format('YYYY-MM-DD HH:mm') }}
-        </div>
-        <div class="min-w-60">
-          {{ $dayjs(work.endedAt).format('YYYY-MM-DD HH:mm') }}
-        </div>
-        <div class="text-wrap h-full w-max">
-          {{ work.description }}
+        <div
+          v-for="work in day.works"
+          :key="work.id"
+          class="flex gap-4 py-1"
+        >
+          <div class="min-w-52 flex items-center">
+            {{ work.project.name }}
+          </div>
+          <div class="min-w-52 flex items-center">
+            {{ work.task.name }}
+          </div>
+          <div class="min-w-60 flex items-center">
+            {{ $dayjs(work.startedAt).format('HH:mm') }}
+          </div>
+          <div class="min-w-60 flex items-center gap-1">
+            <div
+              v-if="$dayjs(work.endedAt).format('HH') === '00'"
+              class="dark:text-green-800 text-sm font-bold"
+            >
+              +1
+            </div>
+            <div>
+              {{ $dayjs(work.endedAt).format('HH:mm') }}
+            </div>
+          </div>
+          <div class="text-wrap h-full w-max flex items-center">
+            {{ work.description }}
+          </div>
         </div>
       </div>
     </div>
@@ -201,7 +221,7 @@ export default {
       },
       projects: [ ],
       tasks: [ ],
-      works: [],
+      worksByDay: [],
     };
   },
   computed: {
@@ -231,7 +251,13 @@ export default {
   },
   methods: {
     async addWork() {
-      await tasksApi.works.create(this.newWork.taskId, this.newWork);
+      const newWork = {
+        ...this.newWork,
+        startedAt: this.$dayjs(this.newWork.startedAt).utc().format(),
+        endedAt: this.$dayjs(this.newWork.endedAt).utc().format(),
+      };
+
+      await tasksApi.works.create(this.newWork.taskId, newWork);
       this.fetchWorks();
 
       this.newWork = {
@@ -261,7 +287,31 @@ export default {
       }
     },
     async fetchWorks() {
-      this.works = (await worksApi.mine()).data.data;
+      let works = (await worksApi.mine()).data.data;
+
+      // group by day
+
+      works = works.reduce((acc, work) => {
+        const date = this.$dayjs(work.startedAt).format('YYYY-MM-DD');
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(work);
+        return acc;
+      }, {});
+
+      works = Object.entries(works).map(([date, works]) => {
+        return {
+          date,
+          'works': works.sort((a, b) => {
+            return a.startedAt < b.startedAt ? 1 : -1;
+          }),
+        };
+      });
+
+      this.worksByDay = works.sort((a, b) => {
+        return a.date < b.date ? 1 : -1;
+      });
     },
   },
 };

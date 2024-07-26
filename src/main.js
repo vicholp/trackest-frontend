@@ -12,9 +12,6 @@ import * as Sentry from '@sentry/vue';
 
 import dayjs from './helpers/dayjs';
 
-
-
-
 const app = createApp(App);
 
 Sentry.init({

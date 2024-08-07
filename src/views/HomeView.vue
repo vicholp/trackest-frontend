@@ -169,27 +169,111 @@
           class="flex gap-4 py-1"
         >
           <div class="min-w-52 flex items-center">
-            {{ work.project.name }}
+            <p v-if="editingWork?.id != work.id">
+              {{ work.project.name }}
+            </p>
+            <select
+              v-else
+              v-model="editingWork.projectId"
+              class="w-full bg-white dark:bg-slate-900 dark:border-0 rounded"
+            >
+              <option
+                v-for="project in projects"
+                :key="project.id"
+                :value="project.id"
+              >
+                {{ project.name }}
+              </option>
+            </select>
           </div>
           <div class="min-w-52 flex items-center">
-            {{ work.task.name }}
+            <p
+              v-if="editingWork?.id != work.id"
+            >
+              {{ work.task.name }}
+            </p>
+            <select
+              v-else
+              v-model="editingWork.taskId"
+              class="w-full bg-white dark:bg-slate-900 dark:border-0 rounded"
+            >
+              <option
+                v-for="task in editingWork.tasks"
+                :key="task.id"
+                :value="task.id"
+              >
+                {{ task.name }}
+              </option>
+            </select>
           </div>
           <div class="min-w-60 flex items-center">
-            {{ $dayjs(work.startedAt).format('HH:mm') }}
+            <p
+              v-if="editingWork?.id != work.id"
+            >
+              {{ $dayjs(work.startedAt).format('HH:mm') }}
+            </p>
+            <input
+              v-else
+              v-model="editingWork.startedAt"
+              class="bg-white dark:bg-slate-900 dark:border-0 rounded w-full"
+              type="datetime-local"
+            >
           </div>
           <div class="min-w-60 flex items-center gap-1">
             <div
-              v-if="$dayjs(work.startedAt).format('YYYY-MM-DD') !== $dayjs(work.endedAt).format('YYYY-MM-DD')"
+              v-if="editingWork?.id != work.id && $dayjs(work.startedAt).format('YYYY-MM-DD') !== $dayjs(work.endedAt).format('YYYY-MM-DD')"
               class="dark:text-green-800 text-sm font-bold"
             >
               +1
             </div>
-            <div>
+
+            <p v-if="editingWork?.id != work.id">
               {{ $dayjs(work.endedAt).format('HH:mm') }}
-            </div>
+            </p>
+            <input
+              v-else
+              v-model="editingWork.endedAt"
+              class="bg-white dark:bg-slate-900 dark:border-0 rounded w-full"
+              type="datetime-local"
+            >
           </div>
-          <div class="text-wrap h-full w-max flex items-center">
-            {{ work.description }}
+          <div class="text-wrap h-full w-max flex flex-grow items-center">
+            <p
+              v-if="editingWork?.id != work.id"
+            >
+              {{ work.description }}
+            </p>
+            <textarea
+              v-else
+              v-model="editingWork.description"
+              class="bg-white dark:bg-slate-900 dark:border-0 rounded min-h-10 h-20 w-full"
+              type="text"
+              placeholder="Description"
+              @keypress.ctrl.enter="addWork"
+            />
+          </div>
+          <div class="flex items-center text-black text-opacity-80 gap-1 justify-center">
+            <button
+              v-if="editingWork?.id != work.id"
+              class="border px-2 py-1 text-sm rounded"
+              @click="deleteWork(work.id)"
+            >
+              delete
+            </button>
+            <button
+              v-if="editingWork?.id != work.id"
+              class="border px-2 py-1 text-sm rounded"
+              @click="editWork(work)"
+            >
+              edit
+            </button>
+            <button
+              v-if="editingWork?.id === work.id"
+              class="border px-2 py-1 text-sm rounded"
+              @click="updateWork()"
+            >
+              save
+            </button>
           </div>
         </div>
       </div>
@@ -206,6 +290,8 @@ import projectsApi from '@/api/projects';
 export default {
   data() {
     return {
+      editingId: null,
+      editingWork: null,
       newWork: {
         projectId: null,
         taskId: null,
@@ -232,6 +318,9 @@ export default {
   watch: {
     'newWork.projectId': function() {
       this.fetchProjectTasks();
+    },
+    'editingWork.projectId': function() {
+      this.fetchProjectTasksEditing();
     },
     'newWork.startedAt': function() {
       if (this.newWork.endedAt) {
@@ -269,12 +358,41 @@ export default {
         tasks: this.newWork.tasks,
       };
     },
+    async deleteWork(workId) {
+      await worksApi.delete(workId);
+      this.fetchWorks();
+    },
+    async fetchProjectTasksEditing() {
+      this.editingWork.tasks = (await projectsApi.tasks.getAll(this.editingWork.projectId)).data.data;
+    },
+    editWork(work) {
+      this.editingWork = {
+        ...work,
+        projectId: work.project.id,
+        startedAt: this.$dayjs(work.startedAt).format('YYYY-MM-DDTHH:mm'),
+        endedAt: this.$dayjs(work.endedAt).format('YYYY-MM-DDTHH:mm'),
+      };
+      this.fetchProjectTasksEditing();
+    },
+    async updateWork() {
+      const editingWork = {
+        ...this.editingWork,
+        startedAt: this.$dayjs(this.editingWork.startedAt).utc().format(),
+        endedAt: this.$dayjs(this.editingWork.endedAt).utc().format(),
+      };
+
+      await worksApi.update(this.editingWork.id, editingWork);
+      this.fetchWorks();
+
+      this.editingWork = null;
+    },
     async fetchProjects() {
       this.projects = (await projectsApi.getAll()).data.data;
     },
     async fetchProjectTasks() {
       this.newWork.tasks = (await projectsApi.tasks.getAll(this.newWork.projectId)).data.data;
     },
+
     async fetchAllTasks() {
       this.tasks = (await tasksApi.getAll({'with_project': true})).data.data;
     },

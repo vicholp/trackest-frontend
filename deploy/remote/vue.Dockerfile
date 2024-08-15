@@ -5,15 +5,18 @@ ENV VITE_BACKEND_URL=${VITE_BACKEND_URL}
 
 WORKDIR /app
 
-COPY package.json .
-COPY package-lock.json .
+COPY package*.json ./
 
-RUN npm i
+RUN npm install
 
-COPY . .
+COPY ./ .
 
 RUN npm run build
 
 FROM nginx:1.25
 
-COPY --from=build /app/dist /usr/share/nginx/html
+RUN mkdir /app
+
+COPY --from=build /app/dist /app
+
+COPY deploy/remote/nginx.conf /etc/nginx/nginx.conf

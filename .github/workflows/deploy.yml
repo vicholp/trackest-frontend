@@ -29,6 +29,8 @@ jobs:
   build:
     # Build and push every Dockerfile found in the previous step
     needs: prepare
+    environment:
+      name: ${{ github.ref_name }}
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -64,19 +66,36 @@ jobs:
           build-args: |
             "VITE_BACKEND_URL=${{ vars.VITE_BACKEND_URL }}"
 
-  # deploy:
-  #   # Deploy the Docker image to the remote server
-  #   needs: build
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Log in to remote server
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.REMOTE_HOST }}
-  #         username: ${{ secrets.REMOTE_USER }}
-  #         key: ${{ secrets.REMOTE_KEY }}
-  #         port: ${{ secrets.REMOTE_PORT }}
-  #         script: |
-  #           cd ${{ secrets.REMOTE_PATH}}
-  #           docker compose pull
-  #           docker compose up -d
+  deploy:
+    # Deploy the Docker image to the remote server
+    needs: build
+    runs-on: ubuntu-22.04
+    environment:
+      name: ${{ github.ref_name }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: source
+
+      - name: Copy remote/compose.yaml to remote server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          # strip_components: 2
+          source: "source/deploy/remote/compose.yaml"
+          target: "${{ secrets.REMOTE_PATH }}/${{ github.ref_name }}/${{ github.repository }}/compose.yaml"
+
+      - name: Pull and start the Docker container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: |
+            cd ${{ secrets.REMOTE_PATH }}/${{ github.ref_name }}/${{ github.repository }}
+            docker compose pull

@@ -99,3 +99,4 @@ jobs:
           script: |
             cd ${{ secrets.REMOTE_PATH }}/${{ github.ref_name }}/${{ github.event.repository.name }}
             docker compose pull
+            docker compose up -d

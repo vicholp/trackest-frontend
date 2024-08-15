@@ -87,7 +87,7 @@ jobs:
           port: ${{ secrets.REMOTE_PORT }}
           strip_components: 3
           source: "source/deploy/remote/compose.yaml"
-          target: "${{ secrets.REMOTE_PATH }}/${{ github.ref_name }}/${{ github.event.repository.name }}/compose.yaml"
+          target: "${{ secrets.REMOTE_PATH }}/${{ github.ref_name }}/${{ github.event.repository.name }}"
 
       - name: Pull and start the Docker container
         uses: appleboy/ssh-action@v1.0.3

@@ -15,7 +15,7 @@
     "@iconify/vue": "^4.1.2",
     "@sentry/tracing": "^7.114.0",
     "@sentry/vite-plugin": "^2.16.1",
-    "@sentry/vue": "^8.0.0",
+    "@sentry/vue": "^8.33.1",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.13",
     "@vitejs/plugin-vue": "^5.0.4",
